@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model clients {
+  id                              Int                               @id @default(autoincrement())
+  client_name                     String?                           @db.VarChar(255)
+  clients_with_special_commission clients_with_special_commission[]
+  transactions                    transactions[]
+}
+
+model clients_with_special_commission {
+  id                Int     @id @default(autoincrement())
+  client_id         Int
+  commission_amount Decimal @db.Decimal(15, 6)
+  is_active         Boolean
+  clients           clients @relation(fields: [client_id], references: [id], onUpdate: Restrict, map: "client_id_fkey")
+
+  @@index([client_id], map: "fki_client_id_fkey")
+}
+
+model transactions {
+  id                        Int      @id @default(autoincrement())
+  client_id                 Int
+  transaction_date          DateTime @db.Date
+  transaction_amount        Decimal  @db.Decimal(15, 6)
+  transaction_currency      String   @db.VarChar(3)
+  commission_amount         Decimal  @db.Decimal(15, 6)
+  commission_currency       String   @db.VarChar(3)
+  exchange_rate             Decimal  @db.Decimal(15, 6)
+  transaction_amount_in_eur Decimal  @db.Decimal(15, 6)
+  clients                   clients  @relation(fields: [client_id], references: [id], onUpdate: Restrict, map: "client_id_fkey")
+}
