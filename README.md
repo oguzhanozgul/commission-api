@@ -1,5 +1,22 @@
 # Commission-API
 
+## Table of Contents
+1. [Introduction](#introduction)</br>
+2. [Endpoints](#endpoints)</br>
+3. [Requests and Responses](#requests-and-responses)</br>
+  a. [/commission/amount endpoint](#commissionamount-endpoint)</br>
+  b. [/client/details endpoint](#clientdetails-endpoint)</br>
+  c. [/client/transactions endpoint](#clienttransactions-endpoint)</br>
+  d. [/client/specials endpoint](#clientspecials-endpoint)</br>
+  e. [/client/best_special endpoint](#clientbest_special-endpoint)</br>
+  f. [/client/total endpoint](#client/total-endpoint)</br>
+  g. [/client/monthly_total endpoint](#clientmonthly_total-endpoint)</br>
+
+4. [Introduction](#introduction)</br>
+5. [Introduction](#introduction)</br>
+6. [Introduction](#introduction)</br>
+7. [Introduction](#introduction)</br>
+8. [Introduction](#introduction)</br>
 ## Introduction
 
 Commission-API is a RESTful API with an endpoint for commission calculation and other endpoints for getting client related information. It gets request in JSON format and sends the responses also in JSON format.
@@ -10,13 +27,13 @@ Commission-API is a RESTful API with an endpoint for commission calculation and 
 </br>
 API endpoint for querying for commission transaction is:
 
-    {APIURL}/commission/amount   : receives transaction data, sends commission data
-    {APIURL}/client/details      : receives client ID, sends client details
-    {APIURL}/client/transactions : receives client ID, sends client transaction history
-    {APIURL}/client/specials     : receives client ID, sends client's special commission conditions
-    {APIURL}/client/best_special : receives client ID, sends client's best (lowest) special commission condition
-    {APIURL}/client/total        : receives client ID, sends client's total lifetime transaction amount
-    {APIURL}/client/monthly_total: receives client ID date, sends client's total transaction amount for that month
+    /commission/amount   : receives transaction data, sends commission data
+    /client/details      : receives client ID, sends client details
+    /client/transactions : receives client ID, sends client transaction history
+    /client/specials     : receives client ID, sends client's special commission conditions
+    /client/best_special : receives client ID, sends client's best (lowest) special commission condition
+    /client/total        : receives client ID, sends client's total lifetime transaction amount
+    /client/monthly_total: receives client ID date, sends client's total transaction amount for that month
 
 ## Requests and Responses:
 </br>
@@ -136,37 +153,52 @@ Response format:
 ```
 </br>
 
-In case of errors, error is sent back to the client.
-
-## Calculation of the commission amount:
-There are three rules for calculating commission. Each rule is checked for each request, and the commission is calculated for each request separately (unless we are sure that there is no lower possible commission). The final commission is always the lowest calculated amount of these three.
-
-Rule #1: Default pricing
+## Commission Calculation Ruless:
+There are three rules for calculating commission. Each rule is checked for each request and the commission is calculated for each request separately. The final commission is always the lowest calculated amount of commission amounts resulting from the rules.
+</br></br>
+### Rule #1: Default pricing
 By default the price for every transaction is 0.5% but not less than 0.05€.
-
-Rule #2: Client with a discount
+</br></br>
+### Rule #2: Client with a discount
 Some clients have special commission amounts defined for them. An example is below:
 ```
 id      client_id    commission_amount  is_active
  1	       42             0.050000	      true
  2	        9	          0.040000	      true
- 3	       10	          0.050000	      true
- 4	       20	          0.050000	      false
- 5	       30	          0.100000	      true
- 6	       40	          5.000000	      false
- 7	       50	          5.000000	      true
  9	        9	          0.100000	      true
 10	        9	          0.030000	      false
-12	        9	          0.010000	      false
-13	       12	         10.000000	      true
 ```
 
-The amounts in this table is in EUR.
+The amounts in this table is in EUR.</br></br>
 In order to return a special commission amount, the client_id needs to be in clients_with_special_commission table and is_active for the entry should be true. It's possible to have more than one active entry per client, and some special commission amounts may be way higher than regular commissions for small transactions. Still, the minimum of all rules will be the effective commission amount.
-
-Rule #3: High turnover discount
+</br></br>
+### Rule #3: High turnover discount
 Client after reaching transaction turnover of 1000.00€ (per month) gets a discount and transaction commission is 0.03€ for the following transactions.
+</br></br>
+## Database
+Commission-API uses PostgreSQL. Both databases below are hosted by heroku.
+</br></br>
+### Production database (check `DATABASE_URL` environment variable)
+```
+URL     : ec2-52-18-116-67.eu-west-1.compute.amazonaws.com
+Database: dca31jlgdfhhnh
+```
 
+### Production shadow database (check `SHADOW_DATABASE_URL` environment variable)
+
+```
+URL     : ec2-52-48-159-67.eu-west-1.compute.amazonaws.com
+Database: ddj5al718fq1f7
+```
+Shadow database was needed for Prisma during migration
+ ### Tables
+Database has 3 tables, the schema is outlined below, in `/prisma/schema.prisma` and visually in `/database/commission_api-database_schema.drawio`
+
+
+
+ </br></br>
+ </br></br>
+ </br></br>
 Transaction history:
 API records transactions to the database, with the following information: 
 
@@ -188,10 +220,6 @@ This historical data is used for calculation for applying Rule #3 above.
 
 ## Technologies used:
 Node.js with NestJS, Prisma, TypeScript
-
-Database: PostgreSQL
-Database used for this API is PostgreSQL hosted at ec2-52-18-116-67.eu-west-1.compute.amazonaws.com, database dca31jlgdfhhnh. (check DATABASE_URL environment variable)
-There is also a shadow database which is used for Prisma migration (as the main DB is in the cloud with no create DB permission) (check SHADOW_DATABASE_URL environment variable)
 
 Other APIs: Currency conversion API provided by exchangerate.host is used for conversions. API URL is https://api.exchangerate.host/convert. Please see related API documentation at https://exchangerate.host/#/docs
 
@@ -246,6 +274,4 @@ what is tested (unit)
 number of tests (integration)
 what is tested (integration)
 
-## DB Tables:
-table columns felan olsun burda
 
