@@ -213,13 +213,13 @@ Database has 3 tables, the schema is outlined below, in `/prisma/schema.prisma` 
 ![Commission-API database diagram](/database/database-outline.png?raw=true)
 
 Table `clients`:</br>
-This is where we keep the client data.
+This is where client data is kept.
 </br></br>
 Table `clients_with_special_commission`:</br>
-This is where we keep the special commission conditions for clients
+This is where special commission conditions for clients are kept.
 </br></br>
 Table `transactions`:</br>
-This is where we keep the transaction history. Transaction history is recorded when there is a request to `/commission/amount` endpoint and when calculating monthly transaction amounts. Below is the structure of
+This is where transaction history is kept. Transaction history is recorded when there is a request to `/commission/amount` endpoint and when calculating monthly transaction amounts. Below is the structure of
 </br></br>
 
 ## Technologies used:
