@@ -18,11 +18,14 @@
   a. [Language](#language)</br>
   b. [Framework](#framework)</br>
   c. [Database](#techdatabase)</br>
-  d. [Database](#database)</br>
-  e. [Database](#database)</br>
-  f. [Database](#database)</br>
-7. [Introduction](#introduction)</br>
-8. [Introduction](#introduction)</br>
+  d. [Cloud platform](#cloud-platform)</br>
+  e. [External APIs](#external-apis)</br>
+  f. [Notable packages](#notable-packages)</br>
+7. [Testing](#testing)</br>
+  a. [Unit tests](#unit-tests)</br>
+  b. [Integration tests](#integration-tests)</br>
+  c. [End-to-end tests](#end-to-end-tests)</br>
+
 ## Introduction
 
 Commission-API is a RESTful API with an endpoint for commission calculation and other endpoints for getting client related information. It gets request in JSON format and sends the responses also in JSON format.
@@ -200,6 +203,9 @@ URL     : ec2-52-48-159-67.eu-west-1.compute.amazonaws.com
 Database: ddj5al718fq1f7
 ```
 Shadow database was needed for Prisma during migration.
+
+### Test database
+PostgreSQL running at `localhost:5435` deployed by Docker in `docker-compose.yml`
  ### Diagram
 Database has 3 tables, the schema is outlined below, in `/prisma/schema.prisma` and in `/database/commission_api-database_schema.drawio`
 </br>
@@ -220,51 +226,59 @@ This is where we keep the transaction history. Transaction history is recorded w
 ### Language:
 Typescript.</br>
 ### Framework:
-Node.js with NestJS
+NestJS in Node.js
 ### Database: <a name="techdatabase"></a>
 PostgreSQL
 ### Cloud platform:
 heroku
 
-Other APIs: Currency conversion API provided by exchangerate.host is used for conversions. API URL is https://api.exchangerate.host/convert. Please see related API documentation at https://exchangerate.host/#/docs
+### External APIs:
+Currency conversion API provided by exchangerate.host for conversions.</br>
+API URL: https://api.exchangerate.host/convert</br>
+API documentation: https://exchangerate.host/#/docs
 
-Additional packages:
+### Notable packages:
 
-class-validator
-class-transformer
-prisma
-axios
-dotenv
+prisma</br>
+Jest</br>
+supertest</br>
+currency.js</br>
+axios</br>
+dotenv and dotenv-cli</br>
+class-validator</br>
+class-transformer</br>
 
+</br>
 
 ## Testing:
-The API code is tested for the below:
+
+
 ### Unit tests:
-Commission-API uses Jest with NestJS integration for unit tests.
-Use `npm run test` to start unit tests.
+Commission-API uses Jest with NestJS integration for unit tests.</br>
+Use `npm run test` to start unit tests.</br>
 The below modules are unit tested:
-- commission.service:
-  This module has 3 tests:
-    Getting the correct commission amount for a regular customer,
-    Getting the correct commission amount for a special customer,
-    Getting the correct commission amount for a high volume customer.
-- client.service
-  This module has 2 tests:
-    Getting the details for a client,
-    Getting the lifetime transaction total for a client.
+- `commission.service`:</br>
+  This module has 3 tests:</br>
+    Getting the correct commission amount for a regular customer,</br>
+    Getting the correct commission amount for a special customer,</br>
+    Getting the correct commission amount for a high volume customer.</br>
+- `client.service`</br>
+  This module has 2 tests:</br>
+    Getting the details for a client,</br>
+    Getting the lifetime transaction total for a client.</br>
 ### Integration tests:
-Commission-API uses supertest with NestJS integration for integration tests. In order to run the tests, docker cli is needed.
-Use `npm run test:int` to start unit tests.
-There are 7 integrations tests in 2 groups:
-  - Creating clients, transactions, special conditions:
-    Creating clients (regular, special, high volume)
-    Creating transaction for the high volume client
-    Creating special commission entry for special client
-  - Calculating and returning commission
-    Returning commission response for regular client
-    Returning commission response for special client
-    Returning commission response for high volume client
-    Returning commission response for regular client for non-EUR currency
+Commission-API uses supertest with NestJS integration for integration tests. In order to run the tests, docker cli is needed.</br>
+Use `npm run test:int` to start unit tests.</br>
+There are 7 integrations tests in 2 groups:</br>
+  - Creating clients, transactions, special conditions:</br>
+    Creating clients (regular, special, high volume)</br>
+    Creating transaction for the high volume client</br>
+    Creating special commission entry for special client</br>
+  - Calculating and returning commission</br>
+    Returning commission response for regular client</br>
+    Returning commission response for special client</br>
+    Returning commission response for high volume client</br>
+    Returning commission response for regular client for non-EUR currency</br>
 
 
 - client.service
@@ -272,11 +286,4 @@ There are 7 integrations tests in 2 groups:
     Getting the details for a client,
     Getting the lifetime transaction total for a client.
 ### End-to-end tests:
-
-test package used
-number of tests (unit)
-what is tested (unit)
-number of tests (integration)
-what is tested (integration)
-
-
+Currently there is 1 end-to-end test which tests `/client/details` endpoint. More end-to-end tests can be added.

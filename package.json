@@ -1,8 +1,8 @@
 {
   "name": "commission-api",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "1.0.0",
+  "description": "Commission-API is a RESTful API with an endpoint for commission calculation and other endpoints for getting client related information. It gets request in JSON format and sends the responses also in JSON format.",
+  "author": "Oguzhan Ozgul",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
