@@ -3,6 +3,8 @@ import { CommissionDto } from "../../../commission/dto";
 import { AppModule } from "../../../app.module";
 import { CommissionService } from "../../../commission/commission.service";
 import { PrismaService } from "../../../prisma/prisma.service";
+import { RulesService } from "../../../rules/rules.service";
+import { RulesModule } from "../../../rules/rules.module";
 
 describe("CommissionService Integration", () => {
   let service: CommissionService;
@@ -10,7 +12,7 @@ describe("CommissionService Integration", () => {
 
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, RulesModule],
     }).compile();
 
     prisma = moduleRef.get(PrismaService);

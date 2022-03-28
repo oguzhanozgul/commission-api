@@ -1,8 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { CommissionService } from "./commission.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { FakeDB } from "../utils/FakeDB";
-import { ClientService } from "../client/client.service";
+import { CommissionService } from "../../commission.service";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { FakeDB } from "../../../utils/FakeDB";
+import { ClientService } from "../../../client/client.service";
+import { RulesService } from "../../../rules/rules.service";
 
 const fakeDB = new FakeDB();
 
@@ -16,9 +17,6 @@ const db = {
     findMany: jest.fn().mockResolvedValue(fakeDB.transactionsArray),
     create: jest.fn().mockReturnValue(fakeDB.aTransaction),
   },
-  // clients_with_special_commission: {
-  //   findMany: jest.fn().mockResolvedValue(fakeDB.specialCommissionsArray),
-  // },
 };
 
 const cs = {
@@ -41,6 +39,7 @@ describe("CommissionService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CommissionService,
+        RulesService,
         {
           provide: PrismaService,
           useValue: db,

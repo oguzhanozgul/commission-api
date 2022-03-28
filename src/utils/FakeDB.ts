@@ -122,4 +122,28 @@ export class FakeDB {
     amount: "0.03",
     currency: "EUR",
   };
+
+  // commission request regular client non-EUR
+  clientRegularNonEUR_CommDto: CommissionDto = {
+    client_id: 50,
+    date: "2021-10-23",
+    amount: 7500,
+    currency: "TRY",
+  };
+  clientRegularNonEUR_SpecialCommissionResponse = {
+    client_id: 50,
+    min_special_commission: null,
+    min_special_commission_currency: "EUR",
+  };
+  clientRegularNonEUR_MonthlyTotalResponse = {
+    client_id: 50,
+    date: parseFloat(new Date("2021-10-01").toString()),
+    amount: "100.00",
+    currency: "EUR",
+  };
+  clientRegularNonEUR_CommissionResponse = {
+    amount: "2.5",
+    currency: "EUR",
+  };
+  clientRegularNonEUR_TransactionAmountEUR = 500;
 }

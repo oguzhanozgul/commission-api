@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ClientService } from "./client.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { FakeDB } from "../utils/FakeDB";
+import { ClientService } from "../../client.service";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { FakeDB } from "../../../utils/FakeDB";
 
 const fakeDB = new FakeDB();
 

@@ -3,41 +3,17 @@ import * as currency from "currency.js";
 import { ClientService } from "../client/client.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { CommissionDto } from "./dto";
+import { RuleInputDto } from "../rules/dto";
 import axios from "axios";
+import { RulesService } from "../rules/rules.service";
 
 @Injectable()
 export class CommissionService {
   constructor(
     private prismaService: PrismaService,
     private clientService: ClientService,
+    private rulesService: RulesService,
   ) {}
-
-  applyRule1(ruleInput) {
-    let result = Infinity;
-    // calculate regular commission
-    result = currency(ruleInput.transactionAmountInEUR)
-      .multiply(ruleInput.regularCommissionPercentage.nominator)
-      .divide(ruleInput.regularCommissionPercentage.denominator).value;
-    // check if result is less than 0.05EUR and raise it if so
-    if (result < 0.05) {
-      result = 0.05;
-    }
-    return result;
-  }
-
-  applyRule2(ruleInput) {
-    const result =
-      ruleInput.clientBestSpecial.min_special_commission ?? Infinity;
-    return result;
-  }
-
-  applyRule3(ruleInput) {
-    let result = Infinity;
-    if (parseFloat(ruleInput.clientMonthlyTotal.amount as string) > 1000) {
-      result = 0.03;
-    }
-    return result;
-  }
 
   async calculateCommission(commissionDto: CommissionDto) {
     let exchangeRate = 1;
@@ -63,7 +39,7 @@ export class CommissionService {
       exchangeRate = exchangedAmount.fx_rate;
     }
     // construct ruleInput
-    const ruleInput = {
+    const ruleInput: RuleInputDto = {
       commissionDto: commissionDto,
       transactionAmountInEUR: transactionAmountInEUR,
       clientBestSpecial: clientBestSpecial,
@@ -71,15 +47,10 @@ export class CommissionService {
       regularCommissionPercentage: { nominator: 5, denominator: 1000 },
     };
 
-    // compare commissions and set the lowest one as the final commission
-    finalCommissionAmount = Math.min(
-      this.applyRule1(ruleInput),
-      this.applyRule2(ruleInput),
-      this.applyRule3(ruleInput),
-    );
+    finalCommissionAmount = this.rulesService.getMinimumCommission(ruleInput);
 
     // insert new transaction to the database
-    const transaction = await this.addTransactionToDB(
+    await this.addTransactionToDB(
       commissionDto,
       finalCommissionAmount,
       exchangeRate,
