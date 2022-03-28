@@ -12,9 +12,15 @@
   f. [/client/total endpoint](#client/total-endpoint)</br>
   g. [/client/monthly_total endpoint](#clientmonthly_total-endpoint)</br>
 
-4. [Introduction](#introduction)</br>
-5. [Introduction](#introduction)</br>
-6. [Introduction](#introduction)</br>
+4. [Commission Calculation Rules](#commission-calculation-rules)</br>
+5. [Database](#database)</br>
+6. [Technologies used](#technologies-used)</br>
+  a. [Language](#language)</br>
+  b. [Framework](#framework)</br>
+  c. [Database](#techdatabase)</br>
+  d. [Database](#database)</br>
+  e. [Database](#database)</br>
+  f. [Database](#database)</br>
 7. [Introduction](#introduction)</br>
 8. [Introduction](#introduction)</br>
 ## Introduction
@@ -153,7 +159,7 @@ Response format:
 ```
 </br>
 
-## Commission Calculation Ruless:
+## Commission Calculation Rules:
 There are three rules for calculating commission. Each rule is checked for each request and the commission is calculated for each request separately. The final commission is always the lowest calculated amount of commission amounts resulting from the rules.
 </br></br>
 ### Rule #1: Default pricing
@@ -172,12 +178,15 @@ id      client_id    commission_amount  is_active
 The amounts in this table is in EUR.</br></br>
 In order to return a special commission amount, the client_id needs to be in clients_with_special_commission table and is_active for the entry should be true. It's possible to have more than one active entry per client, and some special commission amounts may be way higher than regular commissions for small transactions. Still, the minimum of all rules will be the effective commission amount.
 </br></br>
+
 ### Rule #3: High turnover discount
 Client after reaching transaction turnover of 1000.00€ (per month) gets a discount and transaction commission is 0.03€ for the following transactions.
 </br></br>
+
 ## Database
 Commission-API uses PostgreSQL. Both databases below are hosted by heroku.
 </br></br>
+
 ### Production database (check `DATABASE_URL` environment variable)
 ```
 URL     : ec2-52-18-116-67.eu-west-1.compute.amazonaws.com
@@ -190,36 +199,32 @@ Database: dca31jlgdfhhnh
 URL     : ec2-52-48-159-67.eu-west-1.compute.amazonaws.com
 Database: ddj5al718fq1f7
 ```
-Shadow database was needed for Prisma during migration
- ### Tables
-Database has 3 tables, the schema is outlined below, in `/prisma/schema.prisma` and visually in `/database/commission_api-database_schema.drawio`
+Shadow database was needed for Prisma during migration.
+ ### Diagram
+Database has 3 tables, the schema is outlined below, in `/prisma/schema.prisma` and in `/database/commission_api-database_schema.drawio`
+</br>
 
+![Commission-API database diagram](/database/database-outline.png?raw=true)
 
-
- </br></br>
- </br></br>
- </br></br>
-Transaction history:
-API records transactions to the database, with the following information: 
-
-```
-client_id, date, amount, currency, commission_amount, commission_currency, exchange_rate, transaction_amount_in_eur
-```
-
-An example of historical data is below:
-```
-42,2021-01-02,2000.00,EUR,0.05,EUR
-1,2021-01-03,500.00,EUR,2.50,EUR
-1,2021-01-04,499.00,EUR,2.50,EUR
-1,2021-01-05,100.00,EUR,0.50,EUR
-1,2021-01-06,1.00,EUR,0.03,EUR
-1,2021-02-01,500.00,EUR,2.50,EUR
-```
-This historical data is used for calculation for applying Rule #3 above.
-
+Table `clients`:</br>
+This is where we keep the client data.
+</br></br>
+Table `clients_with_special_commission`:</br>
+This is where we keep the special commission conditions for clients
+</br></br>
+Table `transactions`:</br>
+This is where we keep the transaction history. Transaction history is recorded when there is a request to `/commission/amount` endpoint and when calculating monthly transaction amounts. Below is the structure of
+</br></br>
 
 ## Technologies used:
-Node.js with NestJS, Prisma, TypeScript
+### Language:
+Typescript.</br>
+### Framework:
+Node.js with NestJS
+### Database: <a name="techdatabase"></a>
+PostgreSQL
+### Cloud platform:
+heroku
 
 Other APIs: Currency conversion API provided by exchangerate.host is used for conversions. API URL is https://api.exchangerate.host/convert. Please see related API documentation at https://exchangerate.host/#/docs
 
