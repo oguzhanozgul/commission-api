@@ -224,7 +224,7 @@ This is where transaction history is kept. Transaction history is recorded when 
 
 ## Technologies used:
 ### Language:
-Typescript.</br>
+Typescript</br>
 ### Framework:
 NestJS in Node.js
 ### Database: <a name="techdatabase"></a>
