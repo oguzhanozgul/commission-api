@@ -1,7 +1,7 @@
 import { Decimal } from "@prisma/client/runtime";
 import { Type } from "class-transformer";
 import {
-  IsDate,
+  IsDateString,
   IsDecimal,
   IsInt,
   IsNotEmpty,
@@ -11,9 +11,8 @@ import {
 
 export class CommissionDto {
   @IsNotEmpty()
-  @Type(() => Date)
-  @IsDate()
-  date: number;
+  @IsDateString()
+  date: string;
 
   @IsNotEmpty()
   @Type(() => Decimal)

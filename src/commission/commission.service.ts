@@ -26,6 +26,7 @@ export class CommissionService {
       regularCommissionAmount = currency(commissionDto.amount)
         .multiply(5)
         .divide(1000).value;
+      transactionAmountInEUR = commissionDto.amount;
     } else {
       // get exchanged amount from the currency conversion API
       const exchangedAmount = await this.getExchangedAmount(commissionDto);
@@ -92,7 +93,7 @@ export class CommissionService {
       const transaction = await this.prismaService.transactions.create({
         data: {
           client_id: commissionDto.client_id,
-          transaction_date: commissionDto.date,
+          transaction_date: new Date(commissionDto.date),
           transaction_amount: commissionDto.amount,
           transaction_currency: commissionDto.currency,
           commission_amount: commissionAmount,
@@ -114,7 +115,7 @@ export class CommissionService {
       from: commissionDto.currency,
       to: "EUR",
       amount: commissionDto.amount,
-      date: commissionDto.date.toISOString().split("T")[0],
+      date: new Date(commissionDto.date).toISOString().split("T")[0],
       places: "6",
     });
     try {

@@ -54,25 +54,10 @@ export class FakeDB {
   testClientLifetimeTotalTransactions = 1961.3; // client ID 9
   testClientMonthlyTotalTransactions = 1824.11; // client ID 9, date 2021-10
 
-  // specialCommissionsArray = [
-  //   {
-  //     id: 9,
-  //     client_id: 9,
-  //     commission_amount: "0.04",
-  //     is_active: true,
-  //   },
-  //   {
-  //     id: 12,
-  //     client_id: 42,
-  //     commission_amount: "0.05",
-  //     is_active: true,
-  //   },
-  // ];
-
   // commission request regular client
   clientRegular_CommDto: CommissionDto = {
     client_id: 9,
-    date: parseFloat(new Date("2021-10-23").toString()),
+    date: "2021-10-23",
     amount: 500,
     currency: "EUR",
   };
@@ -95,7 +80,7 @@ export class FakeDB {
   // commission request special client
   clientSpecial_CommDto: CommissionDto = {
     client_id: 42,
-    date: parseFloat(new Date("2021-10-23").toString()),
+    date: "2021-10-23",
     amount: 500,
     currency: "EUR",
   };
@@ -118,7 +103,7 @@ export class FakeDB {
   // commission request high volume client
   clientHighVolume_CommDto: CommissionDto = {
     client_id: 51,
-    date: parseFloat(new Date("2021-10-23").toString()),
+    date: "2021-10-23",
     amount: 500,
     currency: "EUR",
   };

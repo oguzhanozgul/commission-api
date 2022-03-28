@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDate, IsInt, IsNotEmpty } from "class-validator";
+import { IsDateString, IsInt, IsNotEmpty } from "class-validator";
 
 export class ClientDateDto {
   @IsNotEmpty()
@@ -8,7 +8,6 @@ export class ClientDateDto {
   client_id: number;
 
   @IsNotEmpty()
-  @Type(() => Date)
-  @IsDate()
-  date: number;
+  @IsDateString()
+  date: string;
 }
