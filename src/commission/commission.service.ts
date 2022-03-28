@@ -26,20 +26,15 @@ export class CommissionService {
   }
 
   applyRule2(ruleInput) {
-    let result = Infinity;
-    if (ruleInput.clientBestSpecial?.min_special_commission) {
-      result = ruleInput.clientBestSpecial.min_special_commission;
-    }
+    const result =
+      ruleInput.clientBestSpecial.min_special_commission ?? Infinity;
     return result;
   }
 
   applyRule3(ruleInput) {
     let result = Infinity;
-    if (ruleInput.clientMonthlyTotal) {
-      const amount = parseFloat(ruleInput.clientMonthlyTotal.amount as string);
-      if (amount > 1000) {
-        result = 0.03;
-      }
+    if (parseFloat(ruleInput.clientMonthlyTotal.amount as string) > 1000) {
+      result = 0.03;
     }
     return result;
   }

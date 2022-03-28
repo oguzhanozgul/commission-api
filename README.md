@@ -28,7 +28,9 @@
 
 ## Introduction
 
-Commission-API is a RESTful API with an endpoint for commission calculation and other endpoints for getting client related information. It gets request in JSON format and sends the responses also in JSON format.
+Commission-API is a RESTful API with an endpoint for commission calculation and other endpoints for getting client related information. It gets request in JSON format and sends the responses also in JSON format.</br>
+To use, fork and clone to local, use `npm install` to install node modules and dependencies. Then use `npm start` or `npm run start:dev` to run, `npm run test` for unit tests,  `npm run test:int` for integration tests and  `npm run test:e2e` for end-to-end tests.
+
 </br>
 </br>
 
