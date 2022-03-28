@@ -4,7 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { CommissionModule } from "./commission/commission.module";
 import { ClientModule } from "./client/client.module";
 import { PrismaModule } from "./prisma/prisma.module";
-import { RulesModule } from './rules/rules.module';
+import { RulesModule } from "./rules/rules.module";
 
 @Module({
   imports: [

@@ -180,13 +180,16 @@ id      client_id    commission_amount  is_active
 10	        9	          0.030000	      false
 ```
 
-The amounts in this table is in EUR.</br></br>
+The amounts in this table are in EUR.</br></br>
 In order to return a special commission amount, the client_id needs to be in clients_with_special_commission table and is_active for the entry should be true. It's possible to have more than one active entry per client, and some special commission amounts may be way higher than regular commissions for small transactions. Still, the minimum of all rules will be the effective commission amount.
 </br></br>
 
 ### Rule #3: High turnover discount
 Client after reaching transaction turnover of 1000.00€ (per month) gets a discount and transaction commission is 0.03€ for the following transactions.
 </br></br>
+
+### Adding additional rules:
+In case needed, additional rules can be added within the rule set in `rules.service`. Each rule is a defined function, which gets pushed to the `rules` array and is executed in order. There is a method within the same service that returns the minimum amount.</br></br>
 
 ## Database
 Commission-API uses PostgreSQL. Both databases below are hosted by heroku.
@@ -214,78 +217,73 @@ Database has 3 tables, the schema is outlined below, in `/prisma/schema.prisma` 
 
 ![Commission-API database diagram](/database/database-outline.png?raw=true)
 
-Table `clients`:</br>
-This is where client data is kept.
+Table `clients`: This is where client data is kept.
 </br></br>
-Table `clients_with_special_commission`:</br>
-This is where special commission conditions for clients are kept.
+Table `clients_with_special_commission`: This is where special commission conditions for clients are kept.
 </br></br>
-Table `transactions`:</br>
-This is where transaction history is kept. Transaction history is recorded when there is a request to `/commission/amount` endpoint and when calculating monthly transaction amounts. Below is the structure of
+Table `transactions`: This is where transaction history is kept. Transaction history is recorded when there is a request to `/commission/amount` endpoint and when calculating monthly transaction amounts. Below is the structure of
 </br></br>
 
 ## Technologies used:
 ### Language:
-Typescript</br>
+- Typescript</br>
 ### Framework:
-NestJS in Node.js
+- NestJS in Node.js
 ### Database: <a name="techdatabase"></a>
-PostgreSQL
+- PostgreSQL
 ### Cloud platform:
-heroku
+- heroku
 
 ### External APIs:
-Currency conversion API provided by exchangerate.host for conversions.</br>
-API URL: https://api.exchangerate.host/convert</br>
-API documentation: https://exchangerate.host/#/docs
+- Currency conversion API provided by exchangerate.host for conversions.</br>
+  - API URL: https://api.exchangerate.host/convert</br>
+  - API documentation: https://exchangerate.host/#/docs
 
 ### Notable packages:
 
-prisma</br>
-Jest</br>
-supertest</br>
-currency.js</br>
-axios</br>
-dotenv and dotenv-cli</br>
-class-validator</br>
-class-transformer</br>
+- prisma</br>
+- Jest</br>
+- supertest</br>
+- currency.js</br>
+- axios</br>
+- dotenv and dotenv-cli</br>
+- class-validator</br>
+- class-transformer</br>
 
 </br>
 
-## Testing:
-
+## Testing
+</br>
 
 ### Unit tests:
 Commission-API uses Jest with NestJS integration for unit tests.</br>
 Use `npm run test` to start unit tests.</br>
 The below modules are unit tested:
-- `commission.service`:</br>
-  This module has 3 tests:</br>
-    Getting the correct commission amount for a regular customer,</br>
-    Getting the correct commission amount for a special customer,</br>
-    Getting the correct commission amount for a high volume customer.</br>
-- `client.service`</br>
-  This module has 2 tests:</br>
-    Getting the details for a client,</br>
-    Getting the lifetime transaction total for a client.</br>
+- `commission.service`: This module has 3 tests:</br>
+  - Getting the correct commission amount for a regular customer,</br>
+  - Getting the correct commission amount for a special customer,</br>
+  - Getting the correct commission amount for a high volume customer.</br></br>
+- `client.service`: This module has 2 tests:</br>
+  - Getting the details for a client,</br>
+  - Getting the lifetime transaction total for a client.</br></br>
+- `rules.service`: This module has 4 tests:</br>
+  - Getting the correct commission amount for a regular customer,</br>
+  - Getting the correct commission amount for a special customer,</br>
+  - Getting the correct commission amount for a high volume customer,</br>
+  - Getting the correct commission amount for a regular customer for non-EUR currency.</br></br>
 ### Integration tests:
 Commission-API uses supertest with NestJS integration for integration tests. In order to run the tests, docker cli is needed.</br>
 Use `npm run test:int` to start unit tests.</br>
 There are 7 integrations tests in 2 groups:</br>
   - Creating clients, transactions, special conditions:</br>
-    Creating clients (regular, special, high volume)</br>
-    Creating transaction for the high volume client</br>
-    Creating special commission entry for special client</br>
+    - Creating clients (regular, special, high volume)</br>
+    - Creating transaction for the high volume client</br>
+    - Creating special commission entry for special client</br></br>
   - Calculating and returning commission</br>
-    Returning commission response for regular client</br>
-    Returning commission response for special client</br>
-    Returning commission response for high volume client</br>
-    Returning commission response for regular client for non-EUR currency</br>
+    - Returning commission response for regular client</br>
+    - Returning commission response for special client</br>
+    - Returning commission response for high volume client</br>
+    - Returning commission response for regular client for non-EUR currency</br></br>
 
-
-- client.service
-  This module has 2 tests:
-    Getting the details for a client,
-    Getting the lifetime transaction total for a client.
 ### End-to-end tests:
 Currently there is 1 end-to-end test which tests `/client/details` endpoint. More end-to-end tests can be added.

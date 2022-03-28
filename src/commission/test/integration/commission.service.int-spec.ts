@@ -3,7 +3,6 @@ import { CommissionDto } from "../../../commission/dto";
 import { AppModule } from "../../../app.module";
 import { CommissionService } from "../../../commission/commission.service";
 import { PrismaService } from "../../../prisma/prisma.service";
-import { RulesService } from "../../../rules/rules.service";
 import { RulesModule } from "../../../rules/rules.module";
 
 describe("CommissionService Integration", () => {
@@ -46,7 +45,7 @@ describe("CommissionService Integration", () => {
         client_id_highvolume = client.id;
       });
       it("should create transaction for high volume client", async () => {
-        const transaction_HighVolume = await prisma.transactions.create({
+        await prisma.transactions.create({
           data: {
             client_id: client_id_highvolume,
             transaction_date: new Date("2021-10-23"),
@@ -60,14 +59,13 @@ describe("CommissionService Integration", () => {
         });
       });
       it("should create client special condition", async () => {
-        const clientCondition_Special =
-          await prisma.clients_with_special_commission.create({
-            data: {
-              client_id: client_id_special,
-              commission_amount: 0.05,
-              is_active: true,
-            },
-          });
+        await prisma.clients_with_special_commission.create({
+          data: {
+            client_id: client_id_special,
+            commission_amount: 0.05,
+            is_active: true,
+          },
+        });
       });
     });
 

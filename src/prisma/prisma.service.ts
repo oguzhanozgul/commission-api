@@ -30,7 +30,7 @@ export class PrismaService
     if (process.env.INT_TESTING === "true") {
       const models = Reflect.ownKeys(this).filter((key) => key[0] !== "_");
       // do cleanup below
-      // return Promise.all(models.map((modelKey) => this[modelKey].deleteMany()));
+      return Promise.all(models.map((modelKey) => this[modelKey].deleteMany()));
     }
   }
 }
