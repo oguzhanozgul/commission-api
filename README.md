@@ -223,6 +223,8 @@ Table `transactions`: This is where transaction history is kept. Transaction his
 - NestJS in Node.js
 ### Database: <a name="techdatabase"></a>
 - PostgreSQL
+### Containerization:
+- Docker (for the testing database)
 ### Cloud platform:
 - heroku
 
