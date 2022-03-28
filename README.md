@@ -27,7 +27,6 @@
   c. [End-to-end tests](#end-to-end-tests)</br>
 
 ## Introduction
-
 Commission-API is a RESTful API with an endpoint for commission calculation and other endpoints for getting client related information. It gets request in JSON format and sends the responses also in JSON format.</br>
 To use, fork and clone to local, use `npm install` to install node modules and dependencies. Then use `npm start` or `npm run start:dev` to run, `npm run test` for unit tests,  `npm run test:int` for integration tests and  `npm run test:e2e` for end-to-end tests.
 
@@ -35,7 +34,6 @@ To use, fork and clone to local, use `npm install` to install node modules and d
 </br>
 
 ## Endpoints
-</br>
 API endpoint for querying for commission transaction is:
 
     /commission/amount   : receives transaction data, sends commission data
@@ -47,8 +45,6 @@ API endpoint for querying for commission transaction is:
     /client/monthly_total: receives client ID date, sends client's total transaction amount for that month
 
 ## Requests and Responses:
-</br>
-
 ### `/commission/amount` endpoint
 Request format:
 ```
@@ -249,12 +245,9 @@ Table `transactions`: This is where transaction history is kept. Transaction his
 - dotenv and dotenv-cli</br>
 - class-validator</br>
 - class-transformer</br>
-
 </br>
 
 ## Testing
-</br>
-
 ### Unit tests:
 Commission-API uses Jest with NestJS integration for unit tests.</br>
 Use `npm run test` to start unit tests.</br>
