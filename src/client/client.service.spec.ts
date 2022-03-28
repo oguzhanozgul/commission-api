@@ -34,10 +34,6 @@ describe("ClientService", () => {
     service = module.get<ClientService>(ClientService);
   });
 
-  it("should be defined", () => {
-    expect(service).toBeDefined();
-  });
-
   describe("Get client details", () => {
     it("should get client details for one client", () => {
       expect(service.clientDetails(fakeDB.aClientDto)).resolves.toEqual(

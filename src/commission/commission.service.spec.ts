@@ -55,10 +55,6 @@ describe("CommissionService", () => {
     service = module.get<CommissionService>(CommissionService);
   });
 
-  it("should be defined", () => {
-    expect(service).toBeDefined();
-  });
-
   describe("Get commission amount", () => {
     it("should get correct commission amount for regular customer", () => {
       expect(
