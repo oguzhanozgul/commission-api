@@ -12,60 +12,75 @@ export class CommissionService {
     private clientService: ClientService,
   ) {}
 
+  applyRule1(ruleInput) {
+    let result = Infinity;
+    // calculate regular commission
+    result = currency(ruleInput.transactionAmountInEUR)
+      .multiply(ruleInput.regularCommissionPercentage.nominator)
+      .divide(ruleInput.regularCommissionPercentage.denominator).value;
+    // check if result is less than 0.05EUR and raise it if so
+    if (result < 0.05) {
+      result = 0.05;
+    }
+    return result;
+  }
+
+  applyRule2(ruleInput) {
+    let result = Infinity;
+    if (ruleInput.clientBestSpecial?.min_special_commission) {
+      result = ruleInput.clientBestSpecial.min_special_commission;
+    }
+    return result;
+  }
+
+  applyRule3(ruleInput) {
+    let result = Infinity;
+    if (ruleInput.clientMonthlyTotal) {
+      const amount = parseFloat(ruleInput.clientMonthlyTotal.amount as string);
+      if (amount > 1000) {
+        result = 0.03;
+      }
+    }
+    return result;
+  }
+
   async calculateCommission(commissionDto: CommissionDto) {
     let exchangeRate = 1;
     let transactionAmountInEUR = null;
-    let specialCommissionAmount = Infinity;
-    let highVolumeCommissionAmount = Infinity;
-    let regularCommissionAmount = Infinity;
     let finalCommissionAmount = 0;
 
-    // calculate regular commission
-    // first check if the currency is EUR and exchange if needed
-    if (commissionDto.currency === "EUR") {
-      regularCommissionAmount = currency(commissionDto.amount)
-        .multiply(5)
-        .divide(1000).value;
-      transactionAmountInEUR = commissionDto.amount;
-    } else {
-      // get exchanged amount from the currency conversion API
-      const exchangedAmount = await this.getExchangedAmount(commissionDto);
-      regularCommissionAmount = currency(exchangedAmount.amount)
-        .multiply(5)
-        .divide(1000).value;
-      transactionAmountInEUR = exchangedAmount.amount;
-      exchangeRate = exchangedAmount.fx_rate;
-    }
-    // finally check if regularCommissionAmount is less than 0.05EUR and raise it if so
-    if (regularCommissionAmount < 0.05) {
-      regularCommissionAmount = 0.05;
-    }
-
-    // check if the client has a defined and active special commission amount, if more than one, take the minimum
-    const specialCommissionMinimum = await this.clientService.clientBestSpecial(
-      { client_id: commissionDto.client_id },
-    );
-    if (specialCommissionMinimum?.min_special_commission) {
-      specialCommissionAmount = specialCommissionMinimum.min_special_commission;
-    }
-
-    // check if previous monthly total is already above 1000.00 EUR
-    const monthlyTransactions = await this.clientService.clientMonthlyTotal({
+    // prepare input for rules
+    // get the best discounted commission amount for the client
+    const clientBestSpecial = await this.clientService.clientBestSpecial({
+      client_id: commissionDto.client_id,
+    });
+    // get the monthly total transaction amount for the client
+    const clientMonthlyTotal = await this.clientService.clientMonthlyTotal({
       client_id: commissionDto.client_id,
       date: commissionDto.date,
     });
-    parseFloat(monthlyTransactions.amount as string);
-    if (monthlyTransactions) {
-      if (parseFloat(monthlyTransactions.amount as string) > 1000) {
-        highVolumeCommissionAmount = 0.03;
-      }
+    // get the transaction amount in EUR using the conversion API
+    if (commissionDto.currency === "EUR") {
+      transactionAmountInEUR = commissionDto.amount;
+    } else {
+      const exchangedAmount = await this.getExchangedAmount(commissionDto);
+      transactionAmountInEUR = exchangedAmount.amount;
+      exchangeRate = exchangedAmount.fx_rate;
     }
+    // construct ruleInput
+    const ruleInput = {
+      commissionDto: commissionDto,
+      transactionAmountInEUR: transactionAmountInEUR,
+      clientBestSpecial: clientBestSpecial,
+      clientMonthlyTotal: clientMonthlyTotal,
+      regularCommissionPercentage: { nominator: 5, denominator: 1000 },
+    };
 
     // compare commissions and set the lowest one as the final commission
     finalCommissionAmount = Math.min(
-      regularCommissionAmount,
-      highVolumeCommissionAmount,
-      specialCommissionAmount,
+      this.applyRule1(ruleInput),
+      this.applyRule2(ruleInput),
+      this.applyRule3(ruleInput),
     );
 
     // insert new transaction to the database
